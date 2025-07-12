@@ -1,0 +1,26 @@
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: wouldntyouliketoknow
+  sslmode: disable
+
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0
+
+mls_systems:
+  mls: # a mls name
+    base_url: "https://some.api.com/odata/"
+    token: "imatoken"
+    database_name: "database"
+    active: true
+
+ddf:
+  token_url: "https://identity.api.com/connect/token"
+  client_id: "clientid"
+  client_secret: "clientsecret"
+  api_url: "https://another.api.com/odata/v1"
+  
