@@ -6,7 +6,6 @@ import (
 
 type Config struct {
 	Database   DatabaseConfig       `mapstructure:"database"`
-	Redis      RedisConfig          `mapstructure:"redis"`
 	MLSSystems map[string]MLSConfig `mapstructure:"mls_systems"`
 	DDF        DDFConfig            `mapstructure:"ddf"`
 }
@@ -19,18 +18,12 @@ type DatabaseConfig struct {
 	SSLMode  string `mapstructure:"sslmode"`
 }
 
-type RedisConfig struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	Password string `mapstructure:"password"`
-	DB       int    `mapstructure:"db"`
-}
-
 type MLSConfig struct {
-	BaseURL      string `mapstructure:"base_url"`
-	Token        string `mapstructure:"token"`
-	DatabaseName string `mapstructure:"database_name"`
-	Active       bool   `mapstructure:"active"`
+	BaseURL           string `mapstructure:"base_url"`
+	Token             string `mapstructure:"token"`
+	DatabaseName      string `mapstructure:"database_name"`
+	IncludeCommercial bool   `mapstructure:"include_commercial"`
+	Active            bool   `mapstructure:"active"`
 }
 
 type DDFConfig struct {

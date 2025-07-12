@@ -54,22 +54,27 @@ func (o *Orchestrator) processTRREB(ctx context.Context, mlsConfig config.MLSCon
 	trrebService := NewTRREBService(mlsConfig, db)
 	persistenceService := NewPersistenceService(db)
 	ddfService := NewDDFService(o.config.DDF)
+	cleanupService := NewCleanupService(db)
 
 	log.Println("Processing residential listings...")
-	if err := o.processPropertyType(ctx, trrebService, persistenceService, ddfService, "residential"); err != nil {
+	if err := o.processPropertyType(ctx, trrebService, persistenceService, ddfService, cleanupService, "residential"); err != nil {
 		return fmt.Errorf("failed to process residential listings: %w", err)
 	}
 
-	log.Println("Processing commercial listings...")
-	if err := o.processPropertyType(ctx, trrebService, persistenceService, ddfService, "commercial"); err != nil {
-		return fmt.Errorf("failed to process commercial listings: %w", err)
+	if mlsConfig.IncludeCommercial {
+		log.Println("Processing commercial listings...")
+		if err := o.processPropertyType(ctx, trrebService, persistenceService, ddfService, cleanupService, "commercial"); err != nil {
+			return fmt.Errorf("failed to process commercial listings: %w", err)
+		}
+	} else {
+		log.Println("Skipping commercial listings (include_commercial = false)")
 	}
 
-	log.Println("TRREB sync complete for all property types")
+	log.Println("TRREB sync complete")
 	return nil
 }
 
-func (o *Orchestrator) processPropertyType(ctx context.Context, trrebService *TRREBService, persistenceService *PersistenceService, ddfService *DDFService, propertyType string) error {
+func (o *Orchestrator) processPropertyType(ctx context.Context, trrebService *TRREBService, persistenceService *PersistenceService, ddfService *DDFService, cleanupService *CleanupService, propertyType string) error {
 	var listings []models.Property
 	var err error
 
@@ -86,43 +91,46 @@ func (o *Orchestrator) processPropertyType(ctx context.Context, trrebService *TR
 		return err
 	}
 
-	if len(listings) == 0 {
-		log.Printf("No updated %s listings found", propertyType)
-		return nil
-	}
+	log.Printf("Retrieved %d %s listings from TRREB", len(listings), propertyType)
 
-	log.Printf("Filtering %d %s listings against DDF", len(listings), propertyType)
-	validListings, err := ddfService.FilterExistingListings(ctx, listings)
-	if err != nil {
-		log.Printf("Warning: DDF filtering failed, proceeding with all listings: %v", err)
-		validListings = listings
-	}
-
-	if len(validListings) == 0 {
-		log.Printf("No valid %s listings found in DDF", propertyType)
-		return nil
-	}
-
-	log.Printf("Enriching %d valid %s listings with media", len(validListings), propertyType)
-	if err := trrebService.EnrichListingsWithMedia(ctx, validListings, propertyType); err != nil {
-		return err
-	}
-
-	log.Printf("Enriching %d %s listings with coordinates", len(validListings), propertyType)
-	if err := ddfService.EnrichListingsWithCoordinates(ctx, validListings); err != nil {
-		log.Printf("Warning: coordinate enrichment failed: %v", err)
-	}
-
-	log.Printf("Saving %d %s listings to database", len(validListings), propertyType)
-	switch propertyType {
-	case "residential":
-		if err := persistenceService.SaveResidentialListings(validListings); err != nil {
-			return err
+	if len(listings) > 0 {
+		log.Printf("Filtering %d %s listings against DDF", len(listings), propertyType)
+		validListings, err := ddfService.FilterExistingListings(ctx, listings)
+		if err != nil {
+			log.Printf("Warning: DDF filtering failed, proceeding with all listings: %v", err)
+			validListings = listings
 		}
-	case "commercial":
-		if err := persistenceService.SaveCommercialListings(validListings); err != nil {
-			return err
+
+		if len(validListings) > 0 {
+			log.Printf("Enriching %d valid %s listings with media", len(validListings), propertyType)
+			if err := trrebService.EnrichListingsWithMedia(ctx, validListings, propertyType); err != nil {
+				return err
+			}
+
+			log.Printf("Enriching %d %s listings with coordinates", len(validListings), propertyType)
+			if err := ddfService.EnrichListingsWithCoordinates(ctx, validListings); err != nil {
+				log.Printf("Warning: coordinate enrichment failed: %v", err)
+			}
+
+			log.Printf("Saving %d %s listings to database", len(validListings), propertyType)
+			switch propertyType {
+			case "residential":
+				if err := persistenceService.SaveResidentialListings(validListings); err != nil {
+					return err
+				}
+			case "commercial":
+				if err := persistenceService.SaveCommercialListings(validListings); err != nil {
+					return err
+				}
+			}
+		} else {
+			log.Printf("No valid %s listings found in DDF", propertyType)
 		}
+	}
+
+	log.Printf("Cleaning up inactive %s listings", propertyType)
+	if err := cleanupService.RemoveInactiveListings(ctx, ddfService, propertyType); err != nil {
+		log.Printf("Warning: cleanup failed for %s: %v", propertyType, err)
 	}
 
 	source := fmt.Sprintf("TRREB_%s", strings.ToUpper(propertyType))
@@ -130,6 +138,6 @@ func (o *Orchestrator) processPropertyType(ctx context.Context, trrebService *TR
 		return err
 	}
 
-	log.Printf("%s sync complete - %d listings processed", propertyType, len(validListings))
+	log.Printf("%s sync complete", propertyType)
 	return nil
 }

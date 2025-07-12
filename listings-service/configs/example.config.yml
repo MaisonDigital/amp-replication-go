@@ -5,17 +5,12 @@ database:
   password: wouldntyouliketoknow
   sslmode: disable
 
-redis:
-  host: localhost
-  port: 6379
-  password: ""
-  db: 0
-
 mls_systems:
   mls: # a mls name
     base_url: "https://some.api.com/odata/"
     token: "imatoken"
     database_name: "database"
+    include_commercial: false
     active: true
 
 ddf:

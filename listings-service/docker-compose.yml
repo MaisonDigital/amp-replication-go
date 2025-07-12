@@ -14,17 +14,25 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - listings_network
+    restart: unless-stopped
 
-  redis:
-    image: redis:7-alpine
-    container_name: listings_redis
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
+  listings-service:
+    build: .
+    container_name: listings_service
+    depends_on:
+      - postgres
     networks:
       - listings_network
+    volumes:
+      - ./configs:/root/configs
+    environment:
+      - TZ=America/Toronto
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   adminer:
     image: adminer
@@ -35,10 +43,10 @@ services:
       - listings_network
     depends_on:
       - postgres
+    restart: unless-stopped
 
 volumes:
   postgres_data:
-  redis_data:
 
 networks:
   listings_network:
