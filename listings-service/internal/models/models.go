@@ -59,6 +59,8 @@ type Property struct {
 	VirtualTourURLBranded2   *string        `gorm:"column:virtual_tour_url_branded2" json:"VirtualTourURLBranded2"`
 	Latitude                 *float64       `gorm:"column:latitude" json:"Latitude"`
 	Longitude                *float64       `gorm:"column:longitude" json:"Longitude"`
+	ApartmentNumber          *string        `gorm:"column:apartment_number" json:"ApartmentNumber"`
+	UnitNumber               *string        `gorm:"column:unit_number" json:"UnitNumber"`
 
 	Media []Media `gorm:"-" json:"Media,omitempty"`
 
