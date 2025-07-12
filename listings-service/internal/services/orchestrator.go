@@ -91,39 +91,45 @@ func (o *Orchestrator) processPropertyType(ctx context.Context, trrebService *TR
 		return nil
 	}
 
-	// Enrich with media
-	log.Printf("Enriching %s listings with media...", propertyType)
-	if err := trrebService.EnrichListingsWithMedia(ctx, listings, propertyType); err != nil {
+	log.Printf("Filtering %d %s listings against DDF", len(listings), propertyType)
+	validListings, err := ddfService.FilterExistingListings(ctx, listings)
+	if err != nil {
+		log.Printf("Warning: DDF filtering failed, proceeding with all listings: %v", err)
+		validListings = listings
+	}
+
+	if len(validListings) == 0 {
+		log.Printf("No valid %s listings found in DDF", propertyType)
+		return nil
+	}
+
+	log.Printf("Enriching %d valid %s listings with media", len(validListings), propertyType)
+	if err := trrebService.EnrichListingsWithMedia(ctx, validListings, propertyType); err != nil {
 		return err
 	}
 
-	// log.Printf("Skipping media enrichment for %s listings (for speed)...", propertyType)
-
-	// Enrich with coordinates from DDF
-	log.Printf("Enriching %d %s listings with geo coordinates...", len(listings), propertyType)
-	if err := ddfService.EnrichListingsWithCoordinates(ctx, listings); err != nil {
-		log.Printf("Warning: DDF enrichment failed: %v", err)
-		// Continue without coordinates rather than failing completely
+	log.Printf("Enriching %d %s listings with coordinates", len(validListings), propertyType)
+	if err := ddfService.EnrichListingsWithCoordinates(ctx, validListings); err != nil {
+		log.Printf("Warning: coordinate enrichment failed: %v", err)
 	}
 
-	log.Printf("Saving %s listings to database...", propertyType)
+	log.Printf("Saving %d %s listings to database", len(validListings), propertyType)
 	switch propertyType {
 	case "residential":
-		if err := persistenceService.SaveResidentialListings(listings); err != nil {
+		if err := persistenceService.SaveResidentialListings(validListings); err != nil {
 			return err
 		}
 	case "commercial":
-		if err := persistenceService.SaveCommercialListings(listings); err != nil {
+		if err := persistenceService.SaveCommercialListings(validListings); err != nil {
 			return err
 		}
 	}
 
 	source := fmt.Sprintf("TRREB_%s", strings.ToUpper(propertyType))
-	log.Printf("%s listings saved. Updating replication timestamp...", propertyType)
 	if err := trrebService.UpdateReplicationTimestamp(source); err != nil {
 		return err
 	}
 
-	log.Printf("%s sync complete - %d listings processed", propertyType, len(listings))
+	log.Printf("%s sync complete - %d listings processed", propertyType, len(validListings))
 	return nil
 }

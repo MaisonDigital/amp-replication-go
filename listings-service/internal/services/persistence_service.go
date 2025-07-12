@@ -19,7 +19,7 @@ func NewPersistenceService(db *gorm.DB) *PersistenceService {
 func (s *PersistenceService) SaveResidentialListings(listings []models.Property) error {
 	const batchSize = 500
 
-	log.Printf("Saving %d residential listings in batches of %d...", len(listings), batchSize)
+	log.Printf("Saving %d residential listings", len(listings))
 
 	for i := 0; i < len(listings); i += batchSize {
 		end := min(i+batchSize, len(listings))
@@ -28,19 +28,16 @@ func (s *PersistenceService) SaveResidentialListings(listings []models.Property)
 		if err := s.saveResidentialBatch(batch); err != nil {
 			return err
 		}
-
-		batchNum := i/batchSize + 1
-		log.Printf("Saved residential batch %d (%d listings)", batchNum, len(batch))
 	}
 
-	log.Println("📦 All residential listings saved to database.")
+	log.Println("Residential listings saved to database")
 	return nil
 }
 
 func (s *PersistenceService) SaveCommercialListings(listings []models.Property) error {
 	const batchSize = 500
 
-	log.Printf("Saving %d commercial listings in batches of %d...", len(listings), batchSize)
+	log.Printf("Saving %d commercial listings", len(listings))
 
 	for i := 0; i < len(listings); i += batchSize {
 		end := min(i+batchSize, len(listings))
@@ -49,12 +46,9 @@ func (s *PersistenceService) SaveCommercialListings(listings []models.Property) 
 		if err := s.saveCommercialBatch(batch); err != nil {
 			return err
 		}
-
-		batchNum := i/batchSize + 1
-		log.Printf("Saved commercial batch %d (%d listings)", batchNum, len(batch))
 	}
 
-	log.Println("All commercial listings saved to database.")
+	log.Println("Commercial listings saved to database")
 	return nil
 }
 

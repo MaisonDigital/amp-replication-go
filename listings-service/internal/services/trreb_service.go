@@ -88,26 +88,22 @@ func (s *TRREBService) getListingsByFilter(ctx context.Context, filter, property
 		return nil, fmt.Errorf("failed to get total count: %w", err)
 	}
 
-	log.Printf("Total %s listings to fetch: %d", propertyType, totalCount)
+	log.Printf("Fetching %d %s listings from TRREB", totalCount, propertyType)
 
 	const pageSize = 5000
 	skip := 0
 
 	for skip < totalCount && skip < 100000 {
-		log.Printf("Fetching %s batch: skip=%d, remaining=%d", propertyType, skip, totalCount-skip)
-
 		batch, err := s.fetchBatch(ctx, filter, skip, pageSize)
 		if err != nil {
-			log.Printf("Failed to fetch %s batch at skip=%d: %v", propertyType, skip, err)
+			log.Printf("Failed to fetch batch at skip=%d: %v", skip, err)
 			break
 		}
 
 		if len(batch) == 0 {
-			log.Printf("TRREB API returned empty array at skip=%d", skip)
 			break
 		}
 
-		log.Printf("Fetched %d %s listings (total so far: %d)", len(batch), propertyType, len(allListings)+len(batch))
 		allListings = append(allListings, batch...)
 		skip += len(batch)
 
@@ -116,15 +112,13 @@ func (s *TRREBService) getListingsByFilter(ctx context.Context, filter, property
 		}
 	}
 
-	log.Printf("Returning %d %s listings from TRREB (expected: %d)", len(allListings), propertyType, totalCount)
+	log.Printf("Retrieved %d %s listings from TRREB", len(allListings), propertyType)
 	return allListings, nil
 }
 
 func (s *TRREBService) getTotalCount(ctx context.Context, filter string) (int, error) {
 	countURL := fmt.Sprintf("%sProperty?$top=0&$count=true&$filter=%s",
 		s.config.BaseURL, filter)
-
-	log.Printf("TRREB COUNT URL: %s", countURL)
 
 	req, err := http.NewRequestWithContext(ctx, "GET", countURL, nil)
 	if err != nil {
@@ -152,10 +146,7 @@ func (s *TRREBService) getTotalCount(ctx context.Context, filter string) (int, e
 		return 0, fmt.Errorf("count not returned in response")
 	}
 
-	totalCount := *countResponse.ODataCount
-	log.Printf("📊 TRREB API reports %d total listings", totalCount)
-
-	return totalCount, nil
+	return *countResponse.ODataCount, nil
 }
 
 func (s *TRREBService) fetchBatch(ctx context.Context, filter string, skip, top int) ([]models.Property, error) {
@@ -184,18 +175,12 @@ func (s *TRREBService) fetchBatch(ctx context.Context, filter string, skip, top 
 		return nil, err
 	}
 
-	if len(response.Value) > 0 {
-		log.Printf("✅ First listing key: %s", response.Value[0].ListingKey)
-	}
-
 	return response.Value, nil
 }
 
 func (s *TRREBService) EnrichListingsWithMedia(ctx context.Context, listings []models.Property, propertyType string) error {
 	const batchSize = 100
-	const maxParallel = 3
-
-	log.Printf("Starting media enrichment for %d %s listings", len(listings), propertyType)
+	const maxParallel = 8
 
 	listingMap := make(map[string]*models.Property)
 	var listingKeys []string
@@ -211,7 +196,7 @@ func (s *TRREBService) EnrichListingsWithMedia(ctx context.Context, listings []m
 		batches = append(batches, listingKeys[i:end])
 	}
 
-	log.Printf("Enriching %s listings with media in %d batches of %d...", propertyType, len(batches), batchSize)
+	log.Printf("Enriching %d %s listings with media", len(listings), propertyType)
 
 	sem := make(chan struct{}, maxParallel)
 	var wg sync.WaitGroup
@@ -232,9 +217,6 @@ func (s *TRREBService) EnrichListingsWithMedia(ctx context.Context, listings []m
 				mutex.Lock()
 				totalAssigned += assigned
 				mutex.Unlock()
-				if index%50 == 0 {
-					log.Printf("Media batch %d/%d complete - %d assigned so far", index+1, len(batches), totalAssigned)
-				}
 			}
 
 			time.Sleep(100 * time.Millisecond)
@@ -242,7 +224,7 @@ func (s *TRREBService) EnrichListingsWithMedia(ctx context.Context, listings []m
 	}
 
 	wg.Wait()
-	log.Printf("All %s media enrichment complete - %d total listings got media", propertyType, totalAssigned)
+	log.Printf("Media enrichment complete: %d listings received media", totalAssigned)
 	return nil
 }
 
@@ -278,7 +260,6 @@ func (s *TRREBService) fetchMediaForBatch(ctx context.Context, listingKeys []str
 			if property, exists := listingMap[listingKey]; exists {
 				property.Media = mediaResponse.Value
 				assignedCount++
-				log.Printf("Assigned %d media items to %s", len(mediaResponse.Value), listingKey)
 			}
 		}
 
