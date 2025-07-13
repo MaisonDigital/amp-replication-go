@@ -12,6 +12,5 @@ RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /root/
 
 COPY --from=builder /app/listings-service .
-COPY --from=builder /app/configs ./configs
 
 CMD ["./listings-service"]

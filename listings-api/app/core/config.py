@@ -1,6 +1,5 @@
 from pydantic_settings import BaseSettings
 from typing import List, Optional
-import os
 
 
 class Settings(BaseSettings):
@@ -8,30 +7,37 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
     
-    DATABASE_HOST: str = "localhost"
+    # Database settings - will be overridden by environment variables
+    DATABASE_HOST: str = "postgres"  # Docker service name
     DATABASE_PORT: int = 5432
     DATABASE_USER: str = "postgres"
-    DATABASE_PASSWORD: str = "cmcs03w7c000007jl2v8jevqq"
-    DATABASE_NAME: str = "postgres"
+    DATABASE_PASSWORD: str = ""  # Set via environment
+    DATABASE_NAME: str = "trreb_listings"
     
-    REDIS_HOST: str = "localhost"
+    # Redis settings - will be overridden by environment variables  
+    REDIS_HOST: str = "redis"  # Docker service name
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
     REDIS_PASSWORD: Optional[str] = None
     
+    # API settings
+    API_V1_STR: str = "/api/v1"
+    API_PORT: int = 8000
+    
+    # Pagination Settings
+    PAGE_SIZE_DEFAULT: int = 20
+    PAGE_SIZE_MAX: int = 100
+    
+    # Cache Settings (in seconds)
+    CACHE_TTL_SECONDS: int = 300
+    SEARCH_CACHE_TTL: int = 180
+    
+    # CORS Settings
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://localhost:3001", 
         "http://localhost:8080",
-        "https://yourdomain.com",  # Eventually add production domains
     ]
-    
-    API_V1_STR: str = "/api/v1"
-    PAGE_SIZE_DEFAULT: int = 20
-    PAGE_SIZE_MAX: int = 100
-    
-    CACHE_TTL_SECONDS: int = 300
-    SEARCH_CACHE_TTL: int = 180
     
     @property
     def DATABASE_URL(self) -> str:

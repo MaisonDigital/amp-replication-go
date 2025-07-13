@@ -1,17 +1,19 @@
 # =================================================================
-# SECURITY: ENVIRONMENT AND SENSITIVE FILES
+# CRITICAL: ENVIRONMENT AND CREDENTIALS
 # =================================================================
-# Environment files (contain passwords and secrets)
+# Environment files with sensitive data
 .env
 .env.*
 !.env.example
 
-# Configuration files with sensitive data
-config.yml
-config.yaml
+# Config files with credentials (CRITICAL)
+listings-service/configs/config.yml
 configs/config.yml
-configs/config.yaml
-!configs/example.config.yml
+
+# API keys and secrets
+*.secret
+secrets/
+api-keys/
 
 # SSL certificates and keys
 *.pem
@@ -24,19 +26,19 @@ certs/
 nginx/ssl/*
 !nginx/ssl/.gitkeep
 
-# API keys and secrets
-secrets/
-*.secret
-
-# Database files and backups
+# =================================================================
+# DATABASE AND BACKUPS
+# =================================================================
+# Database files
 *.db
 *.sqlite
 *.sqlite3
 *.sql
 backups/
+*.dump
 
 # =================================================================
-# GO SERVICE FILES
+# GO SERVICE FILES  
 # =================================================================
 # Binaries for programs and plugins
 *.exe
@@ -44,6 +46,9 @@ backups/
 *.dll
 *.so
 *.dylib
+
+# Go service specific binaries
+listings-service/bin/
 
 # Test binary, built with `go test -c`
 *.test
@@ -54,6 +59,9 @@ coverage.*
 *.coverprofile
 profile.cov
 
+# Dependency directories
+vendor/
+
 # Go workspace file
 go.work
 go.work.sum
@@ -61,7 +69,7 @@ go.work.sum
 # =================================================================
 # PYTHON/FASTAPI FILES
 # =================================================================
-# Byte-compiled / optimized / DLL files
+# Byte-compiled files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -80,22 +88,18 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
+# Testing
 htmlcov/
 .tox/
 .nox/
@@ -109,14 +113,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Virtual environments
-venv/
-env/
-ENV/
-.venv/
-
 # =================================================================
-# DEVELOPMENT AND BUILD FILES
+# DEVELOPMENT FILES
 # =================================================================
 # Editor/IDE
 .idea/
@@ -125,7 +123,7 @@ ENV/
 *.swo
 *~
 
-# OS generated files
+# OS files
 .DS_Store
 .DS_Store?
 ._*
@@ -137,45 +135,38 @@ Thumbs.db
 # Logs
 *.log
 logs/
+npm-debug.log*
 
 # Temporary files
 tmp/
 temp/
+*.tmp
 
 # =================================================================
-# CONTAINER AND DEPLOYMENT FILES
+# CONTAINER AND DEPLOYMENT
 # =================================================================
-# Container volumes and data
+# Container volumes
 postgres_data/
+postgres_dev_data/
+postgres_prod_data/
 redis_data/
+redis_dev_data/
+redis_prod_data/
 
-# Docker/Podman build cache
-.dockerignore
-
-# =================================================================
-# PROJECT SPECIFIC FILES
-# =================================================================
-# Local development overrides
+# Docker/Podman override files
 docker-compose.override.yml
 compose.override.yml
 
-# Generated documentation
-docs/_build/
-
-# Local scripts and notes
+# =================================================================
+# PROJECT SPECIFIC
+# =================================================================
+# Local development scripts and notes
 notes.md
 TODO.md
 local-scripts/
 
-# =================================================================
-# PRODUCTION DEPLOYMENT FILES
-# =================================================================
-# Production environment files
-.env.prod
-.env.production
-.env.staging
+# Generated documentation
+docs/_build/
 
-# SSL certificate files
-*.pem
-*.crt
-*.key
+# Previous conversation artifacts (clean up)
+Previous\ conversations*

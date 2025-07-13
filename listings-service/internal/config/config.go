@@ -1,6 +1,9 @@
 package config
 
 import (
+	"log"
+	"strings"
+
 	"github.com/spf13/viper"
 )
 
@@ -34,22 +37,52 @@ type DDFConfig struct {
 }
 
 func Load() (*Config, error) {
+	// Configure Viper for environment variables
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("LISTINGS")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// Try to read config file but don't fail if it doesn't exist
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./configs")
 	viper.AddConfigPath(".")
 
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("LISTINGS")
-
+	// Read config file if it exists, but continue if it doesn't
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			// Config file was found but another error was produced
+			return nil, err
+		}
+		// Config file not found; use environment variables only
 	}
+
+	// Set defaults
+	setDefaults()
 
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
 		return nil, err
 	}
 
+	log.Printf("Config loaded - Host: %s, User: %s, Password: [%d chars]",
+		config.Database.Host,
+		config.Database.User,
+		len(config.Database.Password))
+
 	return &config, nil
+}
+
+func setDefaults() {
+	// Database defaults
+	viper.SetDefault("database.host", "postgres")
+	viper.SetDefault("database.port", 5432)
+	viper.SetDefault("database.user", "postgres")
+	viper.SetDefault("database.password", "")
+	viper.SetDefault("database.name", "trreb_listings")
+	viper.SetDefault("database.sslmode", "disable")
+
+	// MLS Systems defaults (these will be overridden by environment variables)
+	viper.SetDefault("mls_systems.trreb.include_commercial", false)
+	viper.SetDefault("mls_systems.trreb.active", true)
 }
