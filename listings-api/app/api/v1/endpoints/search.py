@@ -16,7 +16,6 @@ router = APIRouter()
 
 @router.get("/", response_model=SearchResponse)
 async def search_listings(
-    # Filter parameters
     transaction_type: Optional[TransactionType] = Query(None, description="Sale, Lease, or Sub-Lease"),
     property_type: Optional[PropertyType] = Query(None, description="Residential or Commercial"),
     property_sub_type: Optional[str] = Query(None, description="Detached, Condo, etc."),
@@ -27,21 +26,18 @@ async def search_listings(
     city_region: Optional[str] = Query(None, description="City or region"),
     county_or_parish: Optional[str] = Query(None, description="County or parish"),
     
-    # Pagination
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=settings.PAGE_SIZE_MAX, description="Items per page"),
     
-    # Sorting
     sort: SortOption = Query(SortOption.NEWEST, description="Sort option"),
     
-    # Dependencies
     db: Session = Depends(get_db),
     redis_client = Depends(get_redis)
 ):
     """
     Search listings with filters, pagination, and sorting.
     """
-    # Create search filters
+
     filters = SearchFilters(
         transaction_type=transaction_type,
         property_type=property_type,
@@ -54,22 +50,18 @@ async def search_listings(
         county_or_parish=county_or_parish,
     )
     
-    # Generate cache key
     cache_key = f"search:{hash(str(filters.model_dump()))}:{page}:{limit}:{sort}"
     
-    # Try to get from cache first
     if redis_client:
         try:
             cached_result = redis_client.get(cache_key)
             if cached_result:
                 return SearchResponse.model_validate(json.loads(cached_result))
         except Exception:
-            pass  # Cache miss or error, continue to database
+            pass
     
-    # Get search service
     search_service = SearchService(db)
     
-    # Perform search
     listings, total_count = search_service.search_listings(
         filters=filters,
         page=page,
@@ -77,7 +69,6 @@ async def search_listings(
         sort=sort
     )
     
-    # Calculate pagination info
     total_pages = (total_count + limit - 1) // limit
     pagination = PaginationInfo(
         page=page,
@@ -86,14 +77,12 @@ async def search_listings(
         pages=total_pages
     )
     
-    # Create response
     response = SearchResponse(
         listings=listings,
         pagination=pagination,
         filters_applied=filters
     )
     
-    # Cache the result
     if redis_client:
         try:
             redis_client.setex(
@@ -102,20 +91,19 @@ async def search_listings(
                 response.model_dump_json()
             )
         except Exception:
-            pass  # Cache write error, continue
+            pass
     
     return response
 
 
 @router.get("/map", response_model=MapResponse)
 async def search_listings_for_map(
-    # Geographic bounds (required for map)
+    
     ne_lat: float = Query(..., description="Northeast latitude"),
     ne_lng: float = Query(..., description="Northeast longitude"),
     sw_lat: float = Query(..., description="Southwest latitude"),
     sw_lng: float = Query(..., description="Southwest longitude"),
     
-    # Filter parameters (optional for map)
     transaction_type: Optional[TransactionType] = Query(None),
     property_type: Optional[PropertyType] = Query(None),
     property_sub_type: Optional[str] = Query(None),
@@ -124,10 +112,8 @@ async def search_listings_for_map(
     bedrooms: Optional[int] = Query(None, ge=0),
     bathrooms: Optional[int] = Query(None, ge=0),
     
-    # Limit for map display (prevent too many markers)
     limit: int = Query(500, ge=1, le=1000, description="Max listings for map"),
     
-    # Dependencies
     db: Session = Depends(get_db),
     redis_client = Depends(get_redis)
 ):
@@ -135,14 +121,13 @@ async def search_listings_for_map(
     Get listings within map bounds for display on a map.
     Returns minimal data optimized for map markers.
     """
-    # Validate bounds
+    
     if ne_lat <= sw_lat or ne_lng <= sw_lng:
         raise HTTPException(
             status_code=400,
             detail="Invalid geographic bounds: northeast must be greater than southwest"
         )
     
-    # Create search filters with bounds
     filters = SearchFilters(
         transaction_type=transaction_type,
         property_type=property_type,
@@ -157,10 +142,8 @@ async def search_listings_for_map(
         sw_lng=sw_lng,
     )
     
-    # Generate cache key for map search
     cache_key = f"map:{hash(str(filters.model_dump()))}:{limit}"
     
-    # Try cache first
     if redis_client:
         try:
             cached_result = redis_client.get(cache_key)
@@ -169,27 +152,23 @@ async def search_listings_for_map(
         except Exception:
             pass
     
-    # Get search service
     search_service = SearchService(db)
     
-    # Perform map search
     listings = search_service.search_listings_for_map(
         filters=filters,
         limit=limit
     )
     
-    # Create response
     response = MapResponse(
         listings=listings,
         count=len(listings)
     )
     
-    # Cache result (shorter TTL for map data)
     if redis_client:
         try:
             redis_client.setex(
                 cache_key,
-                60,  # 1 minute cache for map data
+                60,
                 response.model_dump_json()
             )
         except Exception:

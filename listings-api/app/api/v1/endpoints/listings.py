@@ -20,7 +20,7 @@ async def get_listing_detail(
     """
     Get detailed information for a specific listing by its listing key.
     """
-    # Try cache first
+    
     cache_key = f"listing_detail:{listing_key}"
     if redis_client:
         try:
@@ -30,7 +30,6 @@ async def get_listing_detail(
         except Exception:
             pass
     
-    # Get from database
     listings_service = ListingsService(db)
     listing = listings_service.get_listing_by_key(listing_key)
     
@@ -40,7 +39,6 @@ async def get_listing_detail(
             detail=f"Listing with key '{listing_key}' not found"
         )
     
-    # Cache the result
     if redis_client:
         try:
             redis_client.setex(
@@ -67,7 +65,6 @@ async def get_listing_media(
     """
     cache_key = f"listing_media:{listing_key}:{size or 'all'}"
     
-    # Try cache first
     if redis_client:
         try:
             cached_result = redis_client.get(cache_key)
@@ -76,7 +73,6 @@ async def get_listing_media(
         except Exception:
             pass
     
-    # Get from database
     listings_service = ListingsService(db)
     media = listings_service.get_listing_media(listing_key, size)
     
@@ -88,7 +84,6 @@ async def get_listing_media(
     
     response = {"listing_key": listing_key, "media": media}
     
-    # Cache the result
     if redis_client:
         try:
             redis_client.setex(

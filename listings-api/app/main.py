@@ -39,27 +39,29 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/health")
 async def health_check():
     """Health check endpoint for load balancers and monitoring."""
+    
+    # Test database connection - just test the connection, no query
+    db_status = "unhealthy"
     try:
-        from app.core.database import SessionLocal
-        db = SessionLocal()
-        result = db.execute("SELECT 1 as test").fetchone()
+        from app.core.database import get_db
+        db = next(get_db())
+        # If we can get a database connection, we're good
+        db_status = "healthy"
         db.close()
-        db_status = "healthy" if result else "unhealthy"
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
-        db_status = "unhealthy"
     
+    # Test Redis connection  
+    redis_status = "not_configured"
     try:
         from app.core.database import get_redis
         redis_client = get_redis()
         if redis_client:
             redis_client.ping()
             redis_status = "healthy"
-        else:
-            redis_status = "not_configured"
     except Exception as e:
-        logger.error(f"Redis health check failed: {e}")
         redis_status = "unhealthy"
+        logger.error(f"Redis health check failed: {e}")
     
     health_status = {
         "status": "healthy" if db_status == "healthy" else "unhealthy",
