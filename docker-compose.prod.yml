@@ -1,28 +1,31 @@
+# Production Environment
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: listings_postgres_dev
+    container_name: listings_postgres_prod
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    container_name: listings_redis_dev
+    container_name: listings_redis_prod
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    restart: unless-stopped
 
   listings-api:
     build:
       context: ./listings-api
-    container_name: listings_api_dev
+    container_name: listings_api_prod
     depends_on:
       - postgres
       - redis
@@ -31,34 +34,28 @@ services:
     environment:
       - DATABASE_HOST=postgres
       - DATABASE_PORT=5432
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=password
-      - DATABASE_NAME=postgres
+      - DATABASE_USER=${POSTGRES_USER}
+      - DATABASE_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_NAME=${POSTGRES_DB}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_DB=0
-      - ENVIRONMENT=development
-      - DEBUG=true
-      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000,http://localhost:8080
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+    restart: unless-stopped
 
   listings-ingestion:
     build: 
       context: ./listings-service
-    container_name: listings_ingestion_dev
+    container_name: listings_ingestion_prod
     depends_on:
       - postgres
     volumes:
       - ./config.yml:/app/configs/config.yml
     environment:
-      - RUN_ONCE=true
-
-  adminer:
-    image: adminer
-    container_name: listings_adminer_dev
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
+      - RUN_ONCE=false
+    restart: unless-stopped
 
 volumes:
   postgres_data:

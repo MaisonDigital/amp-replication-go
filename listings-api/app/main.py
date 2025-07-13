@@ -7,7 +7,6 @@ import sys
 from app.core.config import settings
 from app.api.v1.api import api_router
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO if settings.ENVIRONMENT == "production" else logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -18,7 +17,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Create FastAPI application
 app = FastAPI(
     title=settings.APP_NAME,
     version="1.0.0",
@@ -28,7 +26,6 @@ app = FastAPI(
     redoc_url="/redoc" if settings.DEBUG else None,
 )
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -37,25 +34,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include API routes
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint for load balancers and monitoring."""
     try:
-        # Test database connection
         from app.core.database import SessionLocal
         db = SessionLocal()
-        db.execute("SELECT 1")
+        result = db.execute("SELECT 1 as test").fetchone()
         db.close()
-        db_status = "healthy"
+        db_status = "healthy" if result else "unhealthy"
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
         db_status = "unhealthy"
     
     try:
-        # Test Redis connection
         from app.core.database import get_redis
         redis_client = get_redis()
         if redis_client:

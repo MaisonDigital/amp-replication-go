@@ -7,8 +7,7 @@
 !.env.example
 
 # Config files with credentials (CRITICAL)
-listings-service/configs/config.yml
-configs/config.yml
+config.yml
 
 # API keys and secrets
 *.secret
