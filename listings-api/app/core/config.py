@@ -1,28 +1,28 @@
-from pydantic_settings import BaseSettings
+import os
 from typing import List, Optional
 
 
-class Settings(BaseSettings):
+class Settings:
     APP_NAME: str = "Listings API"
-    ENVIRONMENT: str = "development"
-    DEBUG: bool = True
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
     
-    # Database settings - will be overridden by environment variables
-    DATABASE_HOST: str = "postgres"  # Docker service name
-    DATABASE_PORT: int = 5432
-    DATABASE_USER: str = "postgres"
-    DATABASE_PASSWORD: str = ""  # Set via environment
-    DATABASE_NAME: str = "trreb_listings"
+    # Database settings
+    DATABASE_HOST: str = os.getenv("DATABASE_HOST", "localhost")
+    DATABASE_PORT: int = int(os.getenv("DATABASE_PORT", "5432"))
+    DATABASE_USER: str = os.getenv("DATABASE_USER", "postgres")
+    DATABASE_PASSWORD: str = os.getenv("DATABASE_PASSWORD", "")
+    DATABASE_NAME: str = os.getenv("DATABASE_NAME", "postgres")
     
-    # Redis settings - will be overridden by environment variables  
-    REDIS_HOST: str = "redis"  # Docker service name
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
-    REDIS_PASSWORD: Optional[str] = None
+    # Redis settings
+    REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
+    REDIS_DB: int = int(os.getenv("REDIS_DB", "0"))
+    REDIS_PASSWORD: Optional[str] = os.getenv("REDIS_PASSWORD")
     
     # API settings
     API_V1_STR: str = "/api/v1"
-    API_PORT: int = 8000
+    API_PORT: int = int(os.getenv("API_PORT", "8000"))
     
     # Pagination Settings
     PAGE_SIZE_DEFAULT: int = 20
@@ -33,11 +33,10 @@ class Settings(BaseSettings):
     SEARCH_CACHE_TTL: int = 180
     
     # CORS Settings
-    ALLOWED_ORIGINS: List[str] = [
-        "http://localhost:3000",
-        "http://localhost:3001", 
-        "http://localhost:8080",
-    ]
+    @property
+    def ALLOWED_ORIGINS(self) -> List[str]:
+        origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+        return [origin.strip() for origin in origins_str.split(",")]
     
     @property
     def DATABASE_URL(self) -> str:
@@ -48,10 +47,6 @@ class Settings(BaseSettings):
         if self.REDIS_PASSWORD:
             return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
-    
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 
 settings = Settings()

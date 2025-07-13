@@ -9,7 +9,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o listings-service 
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
-WORKDIR /root/
+WORKDIR /app/
+
+RUN mkdir -p configs
 
 COPY --from=builder /app/listings-service .
 
