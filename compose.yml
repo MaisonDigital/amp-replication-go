@@ -1,0 +1,141 @@
+version: '3.8'
+
+# Podman Compose Configuration for Listings API
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: listings_postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: cmcs03w7c000007jl2v8jevqq
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - listings_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: listings_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - listings_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Go Listings Ingestion Service
+  listings-ingestion:
+    build: 
+      context: ./listings-service
+      dockerfile: Dockerfile
+    container_name: listings_ingestion
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - listings_network
+    volumes:
+      - ./listings-service/configs:/root/configs
+    environment:
+      - TZ=America/Toronto
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # FastAPI Listings API Service  
+  listings-api:
+    build:
+      context: ./listings-api
+      dockerfile: Dockerfile
+    container_name: listings_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - listings_network
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=cmcs03w7c000007jl2v8jevqq
+      - DATABASE_NAME=postgres
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001,https://yourdomain.com
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Database Administration (Optional)
+  adminer:
+    image: adminer
+    container_name: listings_adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - listings_network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy (Optional - for production)
+  nginx:
+    image: nginx:alpine
+    container_name: listings_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - listings_network
+    depends_on:
+      - listings-api
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  listings_network:
+    driver: bridge

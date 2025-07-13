@@ -1,0 +1,181 @@
+# =================================================================
+# SECURITY: ENVIRONMENT AND SENSITIVE FILES
+# =================================================================
+# Environment files (contain passwords and secrets)
+.env
+.env.*
+!.env.example
+
+# Configuration files with sensitive data
+config.yml
+config.yaml
+configs/config.yml
+configs/config.yaml
+!configs/example.config.yml
+
+# SSL certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+ssl/
+certs/
+nginx/ssl/*
+!nginx/ssl/.gitkeep
+
+# API keys and secrets
+secrets/
+*.secret
+
+# Database files and backups
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+backups/
+
+# =================================================================
+# GO SERVICE FILES
+# =================================================================
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Go workspace file
+go.work
+go.work.sum
+
+# =================================================================
+# PYTHON/FASTAPI FILES
+# =================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# =================================================================
+# DEVELOPMENT AND BUILD FILES
+# =================================================================
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+
+# =================================================================
+# CONTAINER AND DEPLOYMENT FILES
+# =================================================================
+# Container volumes and data
+postgres_data/
+redis_data/
+
+# Docker/Podman build cache
+.dockerignore
+
+# =================================================================
+# PROJECT SPECIFIC FILES
+# =================================================================
+# Local development overrides
+docker-compose.override.yml
+compose.override.yml
+
+# Generated documentation
+docs/_build/
+
+# Local scripts and notes
+notes.md
+TODO.md
+local-scripts/
+
+# =================================================================
+# PRODUCTION DEPLOYMENT FILES
+# =================================================================
+# Production environment files
+.env.prod
+.env.production
+.env.staging
+
+# SSL certificate files
+*.pem
+*.crt
+*.key
