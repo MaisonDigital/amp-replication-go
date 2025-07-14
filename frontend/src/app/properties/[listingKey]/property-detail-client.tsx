@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, MapPin, Bed, Bath, Car, Square, Heart, Share2, Calculator, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import { PropertyDetail } from "@/types/property";
+import { PropertyDetail, MediaItem } from "@/types/property";
 import { usePropertyDetail, useSimilarProperties } from "@/hooks/useProperties";
 import { formatPrice, generatePropertyTitle } from "@/lib/utils";
 import { PropertyGrid } from "@/components/properties/property-grid";

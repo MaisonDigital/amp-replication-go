@@ -5,13 +5,16 @@ import { LocationSections } from "@/components/home/location-sections";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Ottawa Real Estate | Find Your Dream Home",
-  description: "Discover your perfect home in Ottawa with our expert real estate team. Browse houses, condos, and rentals across the National Capital Region.",
+  title: siteConfig.seo.defaultTitle || "Ottawa Real Estate | Find Your Dream Home",
+  description: siteConfig.seo.defaultDescription || "Discover your perfect home in Ottawa with our expert real estate team. Browse houses, condos, and rentals across the National Capital Region.",
 };
 
 export default function HomePage() {
   return (
     <>
+    <div className="bg-red-500 text-white p-8 text-center text-2xl">
+  🔥 IF YOU SEE RED, TAILWIND IS WORKING! 🔥
+</div>
       <HeroSearch />
       <FeaturedProperties />
       <LocationSections />

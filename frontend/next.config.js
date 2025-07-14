@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      'localhost',
-      'trreb-image.ampre.ca',
-      'images.realtor.ca',
-      'cdn.realtor.ca',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'trreb-image.ampre.ca',
+        port: '',
+        pathname: '/**',
+      },
     ],
     formats: ['image/webp', 'image/avif'],
   },
