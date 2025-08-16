@@ -28,7 +28,9 @@ export function Header() {
             <div className="hidden items-center space-x-6 md:flex">
               <div className="flex items-center space-x-1 text-gray-600">
                 <Phone className="h-3 w-3" />
-                <span>{siteConfig.company.phone}</span>
+                <span>{siteConfig.company.phones[0]}</span>
+                <Phone className="h-3 w-3" />
+                <span>{siteConfig.company.phones[1]}</span>
               </div>
               <div className="flex items-center space-x-1 text-gray-600">
                 <Mail className="h-3 w-3" />
@@ -49,7 +51,7 @@ export function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded bg-blue-600 flex items-center justify-center">
+              <div className="h-8 w-8 rounded bg-primary-700 flex items-center justify-center">
                 <span className="text-sm font-bold text-white">M</span>
               </div>
               <div>
@@ -70,9 +72,9 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-blue-600",
+                  "text-sm font-medium transition-colors hover:text-primary-600",
                   pathname === item.href
-                    ? "text-blue-600"
+                    ? "text-primary-600"
                     : "text-gray-700"
                 )}
               >
@@ -85,7 +87,7 @@ export function Header() {
           <div className="hidden md:flex">
             <Link
               href="/contact"
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+              className="bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-800 transition-colors"
             >
               Get Started
             </Link>
@@ -118,7 +120,7 @@ export function Header() {
                 className={cn(
                   "block px-3 py-2 rounded-md text-base font-medium",
                   pathname === item.href
-                    ? "bg-blue-100 text-blue-700"
+                    ? "bg-blue-100 text-primary-700"
                     : "text-gray-700 hover:bg-gray-100"
                 )}
                 onClick={() => setIsOpen(false)}
@@ -128,7 +130,7 @@ export function Header() {
             ))}
             <Link
               href="/contact"
-              className="block w-full text-left px-3 py-2 bg-blue-600 text-white rounded-md text-base font-medium hover:bg-blue-700"
+              className="block w-full text-left px-3 py-2 bg-primary-700 text-white rounded-md text-base font-medium hover:bg-primary-800"
               onClick={() => setIsOpen(false)}
             >
               Get Started

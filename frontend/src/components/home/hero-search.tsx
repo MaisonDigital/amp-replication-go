@@ -50,7 +50,7 @@ export function HeroSearch() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-xl lg:text-2xl text-blue-100 mb-12 max-w-3xl mx-auto"
+            className="text-xl lg:text-2xl text-primary-100 mb-12 max-w-3xl mx-auto"
           >
             {siteConfig.company.description}
           </motion.p>
@@ -70,7 +70,7 @@ export function HeroSearch() {
                     onClick={() => setSearchType("buy")}
                     className={`flex items-center space-x-2 px-6 py-3 rounded-md font-medium transition-all ${
                       searchType === "buy"
-                        ? "bg-blue-600 text-white shadow-sm"
+                        ? "bg-primary-700 text-white shadow-sm"
                         : "text-gray-600 hover:text-gray-900"
                     }`}
                   >
@@ -81,7 +81,7 @@ export function HeroSearch() {
                     onClick={() => setSearchType("rent")}
                     className={`flex items-center space-x-2 px-6 py-3 rounded-md font-medium transition-all ${
                       searchType === "rent"
-                        ? "bg-blue-600 text-white shadow-sm"
+                        ? "bg-primary-700 text-white shadow-sm"
                         : "text-gray-600 hover:text-gray-900"
                     }`}
                   >
@@ -135,7 +135,7 @@ export function HeroSearch() {
                 <div>
                   <button
                     type="submit"
-                    className="w-full lg:w-auto flex items-center justify-center space-x-2 bg-blue-600 text-white px-8 py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    className="w-full lg:w-auto flex items-center justify-center space-x-2 bg-primary-700 text-white px-8 py-4 rounded-lg font-medium hover:bg-primary-800 transition-colors"
                   >
                     <Search className="h-5 w-5" />
                     <span>Search Properties</span>
@@ -154,15 +154,15 @@ export function HeroSearch() {
           >
             <div className="text-center">
               <div className="text-3xl font-bold text-yellow-400 mb-2">500+</div>
-              <div className="text-blue-100">Active Listings</div>
+              <div className="text-primary-100">Active Listings</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-yellow-400 mb-2">15+</div>
-              <div className="text-blue-100">Years Experience</div>
+              <div className="text-primary-100">Years Experience</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-yellow-400 mb-2">1000+</div>
-              <div className="text-blue-100">Happy Clients</div>
+              <div className="text-primary-100">Happy Clients</div>
             </div>
           </motion.div>
         </div>

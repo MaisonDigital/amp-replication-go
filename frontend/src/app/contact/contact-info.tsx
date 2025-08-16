@@ -7,7 +7,7 @@ export function ContactInfo() {
       {/* Contact Details */}
       <div className="space-y-4">
         <div className="flex items-start space-x-3">
-          <Phone className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+          <Phone className="h-5 w-5 text-primary-600 mt-1 flex-shrink-0" />
           <div>
             <h3 className="font-medium text-gray-900">Phone</h3>
             <p className="text-gray-600">{siteConfig.company.phone}</p>
@@ -16,7 +16,7 @@ export function ContactInfo() {
         </div>
 
         <div className="flex items-start space-x-3">
-          <Mail className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+          <Mail className="h-5 w-5 text-primary-600 mt-1 flex-shrink-0" />
           <div>
             <h3 className="font-medium text-gray-900">Email</h3>
             <p className="text-gray-600">{siteConfig.company.email}</p>
@@ -25,7 +25,7 @@ export function ContactInfo() {
         </div>
 
         <div className="flex items-start space-x-3">
-          <MapPin className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+          <MapPin className="h-5 w-5 text-primary-600 mt-1 flex-shrink-0" />
           <div>
             <h3 className="font-medium text-gray-900">Office</h3>
             <p className="text-gray-600">{siteConfig.company.address}</p>
@@ -34,7 +34,7 @@ export function ContactInfo() {
         </div>
 
         <div className="flex items-start space-x-3">
-          <Clock className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+          <Clock className="h-5 w-5 text-primary-600 mt-1 flex-shrink-0" />
           <div>
             <h3 className="font-medium text-gray-900">Hours</h3>
             <div className="text-gray-600 text-sm space-y-1">
@@ -56,7 +56,7 @@ export function ContactInfo() {
             rel="noopener noreferrer"
             className="p-2 bg-gray-100 rounded-lg hover:bg-blue-100 transition-colors"
           >
-            <Facebook className="h-5 w-5 text-gray-600 hover:text-blue-600" />
+            <Facebook className="h-5 w-5 text-gray-600 hover:text-primary-600" />
           </a>
           <a
             href={siteConfig.social.instagram}
@@ -72,7 +72,7 @@ export function ContactInfo() {
             rel="noopener noreferrer"
             className="p-2 bg-gray-100 rounded-lg hover:bg-blue-100 transition-colors"
           >
-            <Twitter className="h-5 w-5 text-gray-600 hover:text-blue-600" />
+            <Twitter className="h-5 w-5 text-gray-600 hover:text-primary-600" />
           </a>
           <a
             href={siteConfig.social.linkedin}
@@ -80,20 +80,20 @@ export function ContactInfo() {
             rel="noopener noreferrer"
             className="p-2 bg-gray-100 rounded-lg hover:bg-blue-100 transition-colors"
           >
-            <Linkedin className="h-5 w-5 text-gray-600 hover:text-blue-600" />
+            <Linkedin className="h-5 w-5 text-gray-600 hover:text-primary-600" />
           </a>
         </div>
       </div>
 
       {/* Quick Response */}
       <div className="bg-blue-50 rounded-lg p-6">
-        <h3 className="font-semibold text-blue-900 mb-2">Need Immediate Assistance?</h3>
-        <p className="text-blue-700 text-sm mb-4">
+        <h3 className="font-semibold text-primary-900 mb-2">Need Immediate Assistance?</h3>
+        <p className="text-primary-700 text-sm mb-4">
           For urgent matters or to schedule a same-day viewing, call us directly.
         </p>
         <a
           href={`tel:${siteConfig.company.phone.replace(/\D/g, '')}`}
-          className="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-800 transition-colors"
         >
           <Phone className="h-4 w-4 mr-2" />
           Call Now

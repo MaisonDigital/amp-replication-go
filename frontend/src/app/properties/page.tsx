@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Grid, List, Map, SlidersHorizontal } from "lucide-react";
 import { PropertyGrid } from "@/components/properties/property-grid";
@@ -49,10 +49,10 @@ function PropertiesPageContent() {
 
   const { data, isLoading, error } = useSearchProperties(filters, sort, page, 20);
 
-  const handleFiltersChange = (newFilters: SearchFiltersType) => {
+  const handleFiltersChange = useCallback((newFilters: SearchFiltersType) => {
     setFilters(newFilters);
-    setPage(1); // Reset to first page when filters change
-  };
+    setPage(1);
+  }, []);
 
   const handleSortChange = (newSort: SortOption) => {
     setSort(newSort);
@@ -143,7 +143,7 @@ function PropertiesPageContent() {
                     onClick={() => setViewMode("grid")}
                     className={`p-2 rounded-md transition-colors ${
                       viewMode === "grid"
-                        ? "bg-white shadow-sm text-blue-600"
+                        ? "bg-white shadow-sm text-primary-600"
                         : "text-gray-600 hover:text-gray-900"
                     }`}
                   >
@@ -153,7 +153,7 @@ function PropertiesPageContent() {
                     onClick={() => setViewMode("list")}
                     className={`p-2 rounded-md transition-colors ${
                       viewMode === "list"
-                        ? "bg-white shadow-sm text-blue-600"
+                        ? "bg-white shadow-sm text-primary-600"
                         : "text-gray-600 hover:text-gray-900"
                     }`}
                   >
@@ -163,7 +163,7 @@ function PropertiesPageContent() {
                     onClick={() => setViewMode("map")}
                     className={`p-2 rounded-md transition-colors ${
                       viewMode === "map"
-                        ? "bg-white shadow-sm text-blue-600"
+                        ? "bg-white shadow-sm text-primary-600"
                         : "text-gray-600 hover:text-gray-900"
                     }`}
                   >
@@ -207,7 +207,7 @@ function PropertiesPageContent() {
                         onClick={() => handlePageChange(pageNum)}
                         className={`px-3 py-2 rounded-md text-sm font-medium ${
                           page === pageNum
-                            ? "bg-blue-600 text-white"
+                            ? "bg-primary-700 text-white"
                             : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
                         }`}
                       >

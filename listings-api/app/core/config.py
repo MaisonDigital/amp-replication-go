@@ -35,7 +35,8 @@ class Settings:
     # CORS Settings
     @property
     def ALLOWED_ORIGINS(self) -> List[str]:
-        origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+        # origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+        origins_str = "*"
         return [origin.strip() for origin in origins_str.split(",")]
     
     @property

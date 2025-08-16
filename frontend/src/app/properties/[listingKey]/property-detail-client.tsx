@@ -120,7 +120,7 @@ export function PropertyDetailClient({ listingKey, initialData }: PropertyDetail
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-blue-600">
+                    <div className="text-3xl font-bold text-primary-600">
                       {formatPrice(property.list_price)}
                     </div>
                     <div className="text-sm text-gray-500">
@@ -225,14 +225,14 @@ export function PropertyDetailClient({ listingKey, initialData }: PropertyDetail
                   Contact Agent
                 </h3>
                 <div className="space-y-4">
-                  <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  <button className="w-full bg-primary-700 text-white py-3 rounded-lg font-medium hover:bg-primary-800 transition-colors">
                     Request Information
                   </button>
-                  <button className="w-full border border-blue-600 text-blue-600 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                  <button className="w-full border border-blue-600 text-primary-600 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors">
                     Schedule Viewing
                   </button>
                   <div className="flex items-center justify-center space-x-4 text-sm">
-                    <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600">
+                    <button className="flex items-center space-x-1 text-gray-600 hover:text-primary-600">
                       <Calculator className="h-4 w-4" />
                       <span>Mortgage Calculator</span>
                     </button>

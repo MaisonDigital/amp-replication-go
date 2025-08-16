@@ -14,7 +14,7 @@ export function Footer() {
             {/* Company Info */}
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
-                <div className="h-8 w-8 rounded bg-blue-600 flex items-center justify-center">
+                <div className="h-8 w-8 rounded bg-primary-700 flex items-center justify-center">
                   <span className="text-sm font-bold text-white">M</span>
                 </div>
                 <div>

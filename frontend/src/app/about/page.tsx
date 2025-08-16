@@ -25,7 +25,7 @@ export default function AboutPage() {
             <h1 className="text-4xl lg:text-5xl font-bold mb-6">
               About {siteConfig.company.name}
             </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+            <p className="text-xl text-primary-100 max-w-3xl mx-auto">
               {siteConfig.company.description}
             </p>
           </div>
@@ -40,7 +40,7 @@ export default function AboutPage() {
               <div key={stat.label} className="text-center">
                 <div className="flex justify-center mb-4">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                    <stat.icon className="h-8 w-8 text-blue-600" />
+                    <stat.icon className="h-8 w-8 text-primary-600" />
                   </div>
                 </div>
                 <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
@@ -90,19 +90,19 @@ export default function AboutPage() {
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Our Values</h3>
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-primary-700 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                   <span><strong>Integrity:</strong> We conduct business with honesty and transparency</span>
                 </li>
                 <li className="flex items-start">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-primary-700 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                   <span><strong>Excellence:</strong> We strive for the highest standards in everything we do</span>
                 </li>
                 <li className="flex items-start">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-primary-700 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                   <span><strong>Innovation:</strong> We embrace technology to better serve our clients</span>
                 </li>
                 <li className="flex items-start">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-primary-700 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                   <span><strong>Community:</strong> We're committed to giving back to Ottawa</span>
                 </li>
               </ul>
@@ -116,7 +116,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-gray-50 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-blue-600" />
+                <Users className="h-8 w-8 text-primary-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Buyer Representation</h3>
               <p className="text-gray-600">
@@ -127,7 +127,7 @@ export default function AboutPage() {
 
             <div className="bg-gray-50 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="h-8 w-8 text-blue-600" />
+                <TrendingUp className="h-8 w-8 text-primary-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Seller Representation</h3>
               <p className="text-gray-600">
@@ -138,7 +138,7 @@ export default function AboutPage() {
 
             <div className="bg-gray-50 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="h-8 w-8 text-blue-600" />
+                <MapPin className="h-8 w-8 text-primary-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Property Management</h3>
               <p className="text-gray-600">
@@ -150,24 +150,24 @@ export default function AboutPage() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-20 bg-blue-600 rounded-2xl p-12 text-center">
+        <div className="mt-20 bg-primary-700 rounded-2xl p-12 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to Work with Ottawa's Best?
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
             Whether you're buying, selling, or investing in Ottawa real estate, 
             our team is here to help you achieve your goals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/contact"
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              className="bg-white text-primary-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
             >
               Get Started Today
             </a>
             <a
               href="/properties"
-              className="border-2 border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-blue-600 transition-colors"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-primary-600 transition-colors"
             >
               Browse Properties
             </a>

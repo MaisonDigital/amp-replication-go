@@ -9,7 +9,7 @@ export function FeaturedProperties() {
   const { data: featuredData, isLoading } = useFeaturedProperties(
     siteConfig.officeKey,
     "Residential",
-    8
+    12
   );
 
   if (isLoading) {
@@ -88,7 +88,7 @@ export function FeaturedProperties() {
         >
           <a
             href="/properties"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-primary-700 text-white font-medium rounded-lg hover:bg-primary-800 transition-colors"
           >
             View All Properties
           </a>

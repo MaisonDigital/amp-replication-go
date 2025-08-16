@@ -30,7 +30,6 @@ export function PropertyCard({ property, className, showFavorite = true }: Prope
         className
       )}
     >
-      {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <Link href={href}>
           {property.thumbnail_url ? (
@@ -77,7 +76,7 @@ export function PropertyCard({ property, className, showFavorite = true }: Prope
 
         {/* Status badge */}
         {property.transaction_type && (
-          <div className="absolute top-3 left-3 px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded">
+          <div className="absolute top-3 left-3 px-2 py-1 bg-primary-700 text-white text-xs font-medium rounded">
             {property.transaction_type === "For Sale" ? "For Sale" : "For Rent"}
           </div>
         )}
@@ -95,7 +94,7 @@ export function PropertyCard({ property, className, showFavorite = true }: Prope
       {/* Content */}
       <div className="p-4">
         <Link href={href} className="block">
-          <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+          <h3 className="font-medium text-gray-900 truncate group-hover:text-primary-600 transition-colors">
             {title}
           </h3>
           

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,25 +30,45 @@ export function SearchFilters({ filters, onFiltersChange, className }: SearchFil
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(0);
 
+  const onFiltersChangeRef = useRef(onFiltersChange);
+  onFiltersChangeRef.current = onFiltersChange;
+
   const { register, watch, setValue, reset } = useForm<SearchFiltersType>({
     resolver: zodResolver(filterSchema),
     defaultValues: filters,
   });
 
-  const watchedValues = watch();
+  const transaction_type = watch("transaction_type");
+  const property_type = watch("property_type");
+  const property_sub_type = watch("property_sub_type");
+  const min_price = watch("min_price");
+  const max_price = watch("max_price");
+  const bedrooms = watch("bedrooms");
+  const bathrooms = watch("bathrooms");
+  const city_region = watch("city_region");
 
   // Count active filters
   useEffect(() => {
-    const count = Object.values(watchedValues).filter(
-      (value) => value !== undefined && value !== "" && value !== null
-    ).length;
+    const values = [transaction_type, property_type, property_sub_type, min_price, max_price, bedrooms, bathrooms, city_region];
+    const count = values.filter(value => value !== undefined && value !== "" && value !== null).length;
     setActiveFilters(count);
-  }, [watchedValues]);
+  }, [transaction_type, property_type, property_sub_type, min_price, max_price, bedrooms, bathrooms, city_region]);
 
   // Trigger onChange when form values change
   useEffect(() => {
-    onFiltersChange(watchedValues);
-  }, [watchedValues, onFiltersChange]);
+    const filters = {
+      transaction_type,
+      property_type,
+      property_sub_type,
+      min_price,
+      max_price,
+      bedrooms,
+      bathrooms,
+      city_region,
+    };
+    
+    onFiltersChangeRef.current(filters);
+  }, [transaction_type, property_type, property_sub_type, min_price, max_price, bedrooms, bathrooms, city_region]);
 
   const clearFilters = () => {
     reset();
@@ -77,7 +97,7 @@ export function SearchFilters({ filters, onFiltersChange, className }: SearchFil
             <Filter className="h-4 w-4" />
             <span>Filters</span>
             {activeFilters > 0 && (
-              <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+              <span className="bg-primary-700 text-white text-xs px-2 py-1 rounded-full">
                 {activeFilters}
               </span>
             )}
@@ -168,7 +188,9 @@ export function SearchFilters({ filters, onFiltersChange, className }: SearchFil
               Bedrooms
             </label>
             <select
-              {...register("bedrooms", { valueAsNumber: true })}
+              {...register("bedrooms", {
+                setValueAs: (value) => value === "" ? undefined : Number(value)
+              })}
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Any</option>
@@ -186,7 +208,9 @@ export function SearchFilters({ filters, onFiltersChange, className }: SearchFil
               Bathrooms
             </label>
             <select
-              {...register("bathrooms", { valueAsNumber: true })}
+              {...register("bathrooms", {
+                setValueAs: (value) => value === "" ? undefined : Number(value)
+              })}
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Any</option>
@@ -219,7 +243,7 @@ export function SearchFilters({ filters, onFiltersChange, className }: SearchFil
           {activeFilters > 0 && (
             <button
               onClick={clearFilters}
-              className="w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
+              className="w-full py-2 text-center text-primary-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
             >
               Clear All Filters
             </button>

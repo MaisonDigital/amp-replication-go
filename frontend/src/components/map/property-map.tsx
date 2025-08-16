@@ -96,7 +96,7 @@ export function PropertyMap({
       const markerEl = document.createElement("div");
       markerEl.className = "property-marker";
       markerEl.innerHTML = `
-        <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg text-xs font-medium cursor-pointer hover:bg-blue-700 transition-colors border-2 border-white">
+        <div class="bg-primary-700 text-white px-2 py-1 rounded-lg shadow-lg text-xs font-medium cursor-pointer hover:bg-primary-800 transition-colors border-2 border-white">
           ${formatPriceShort(property.list_price)}
         </div>
       `;
@@ -127,7 +127,7 @@ export function PropertyMap({
               ${property.address.street_number || ""} ${property.address.street_name || ""}
             </div>
             <div class="text-xs text-gray-600">${property.address.city_region || ""}</div>
-            <div class="font-bold text-blue-600 mt-1">${formatPriceShort(property.list_price)}</div>
+            <div class="font-bold text-primary-600 mt-1">${formatPriceShort(property.list_price)}</div>
             ${property.bedrooms_total ? `<div class="text-xs text-gray-500">${property.bedrooms_total} bed, ${property.bathrooms_total_integer || 0} bath</div>` : ""}
           </div>
         `;

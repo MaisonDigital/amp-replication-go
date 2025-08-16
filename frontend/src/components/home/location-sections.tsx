@@ -41,10 +41,10 @@ export function LocationSections() {
               >
                 <div className="flex items-center mb-4">
                   <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                    <MapPin className="h-6 w-6 text-blue-600" />
+                    <MapPin className="h-6 w-6 text-primary-600" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
                       {location}
                     </h3>
                   </div>
@@ -61,7 +61,7 @@ export function LocationSections() {
                   </div>
                 </div>
                 
-                <div className="mt-4 text-blue-600 text-sm font-medium group-hover:text-blue-700">
+                <div className="mt-4 text-primary-600 text-sm font-medium group-hover:text-primary-700">
                   View Properties →
                 </div>
               </Link>
