@@ -3,33 +3,33 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'trreb-image.ampre.ca',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "trreb-image.ampre.ca",
+        port: "",
+        pathname: "/**",
       },
     ],
-    formats: ['image/webp', 'image/avif'],
+    formats: ["image/webp", "image/avif"],
   },
   experimental: {
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: ["lucide-react"],
   },
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'DENY',
+            key: "X-Frame-Options",
+            value: "DENY",
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: "X-Content-Type-Options",
+            value: "nosniff",
           },
           {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
           },
         ],
       },
@@ -38,13 +38,13 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/home',
-        destination: '/',
+        source: "/home",
+        destination: "/",
         permanent: true,
       },
       {
-        source: '/listings',
-        destination: '/properties',
+        source: "/listings",
+        destination: "/properties",
         permanent: true,
       },
     ];
@@ -58,6 +58,7 @@ const nextConfig = {
     }
     return config;
   },
+  allowedDevOrigins: ["172.16.0.61"],
 };
 
 module.exports = nextConfig;

@@ -1,13 +1,14 @@
+// src/app/properties/[listingKey]/property-detail-client.tsx
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { ChevronLeft, ChevronRight, MapPin, Bed, Bath, Car, Square, Heart, Share2, Calculator, Calendar } from "lucide-react";
+import { MapPin, Bed, Bath, Car, Square, Share2, Calculator, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { PropertyDetail, MediaItem } from "@/types/property";
 import { usePropertyDetail, useSimilarProperties } from "@/hooks/useProperties";
 import { formatPrice, generatePropertyTitle } from "@/lib/utils";
 import { PropertyGrid } from "@/components/properties/property-grid";
+import { PropertyImageGallery } from "./property-image-gallery";
 
 interface PropertyDetailClientProps {
   listingKey: string;
@@ -15,89 +16,35 @@ interface PropertyDetailClientProps {
 }
 
 export function PropertyDetailClient({ listingKey, initialData }: PropertyDetailClientProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  
   const { data: property = initialData, isLoading } = usePropertyDetail(listingKey);
   const { data: similarData } = useSimilarProperties(listingKey, 4);
 
   if (isLoading && !initialData) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-pulse text-gray-500">Loading property details...</div>
+    </div>;
   }
 
   if (!property) {
-    return <div>Property not found</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-gray-500">Property not found</div>
+    </div>;
   }
 
   const title = generatePropertyTitle(property);
+  const formattedPrice = formatPrice(property.list_price);
+  const address = property.address.full_address;
   const images = property.media.filter((m: MediaItem) => m.media_url && m.image_size_description !== "Thumbnail");
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Image Gallery */}
-      <div className="relative">
-        {images.length > 0 ? (
-          <div className="relative h-96 lg:h-[500px] overflow-hidden">
-            <Image
-              src={images[currentImageIndex].media_url || ""}
-              alt={title}
-              fill
-              className="object-cover"
-              priority
-            />
-            
-            {/* Navigation arrows */}
-            {images.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </>
-            )}
-
-            {/* Image counter */}
-            {images.length > 1 && (
-              <div className="absolute bottom-4 right-4 px-3 py-1 bg-black/70 text-white text-sm rounded-full">
-                {currentImageIndex + 1} / {images.length}
-              </div>
-            )}
-
-            {/* Action buttons */}
-            <div className="absolute top-4 right-4 flex space-x-2">
-              <button
-                onClick={() => setIsLiked(!isLiked)}
-                className="p-3 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
-              >
-                <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
-              </button>
-              <button className="p-3 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors">
-                <Share2 className="h-5 w-5 text-gray-600" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="h-96 lg:h-[500px] bg-gray-200 flex items-center justify-center">
-            <Square className="h-24 w-24 text-gray-400" />
-          </div>
-        )}
-      </div>
+      {/* Enhanced Image Gallery */}
+      <PropertyImageGallery 
+        images={images} 
+        title={title}
+        price={formattedPrice}
+        address={address}
+      />
 
       {/* Property Details */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -178,89 +125,172 @@ export function PropertyDetailClient({ listingKey, initialData }: PropertyDetail
                         <span className="font-medium">{property.rooms_above_grade}</span>
                       </div>
                     )}
-                    {property.lot_depth && (
+                    {property.rooms_below_grade && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Lot Depth:</span>
-                        <span className="font-medium">{property.lot_depth} ft</span>
+                        <span className="text-gray-600">Rooms Below Grade:</span>
+                        <span className="font-medium">{property.rooms_below_grade}</span>
                       </div>
                     )}
+                    {property.lot_size_units && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Lot Size:</span>
+                        <span className="font-medium">
+                          {property.lot_depth && property.lot_width 
+                            ? `${property.lot_depth} x ${property.lot_width} ${property.lot_size_units}`
+                            : `${property.lot_size_units}`}
+                        </span>
+                      </div>
+                    )}
+                    {property.tax_annual_amount && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Annual Tax:</span>
+                        <span className="font-medium">${property.tax_annual_amount.toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-3">
                     {property.heat_type && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Heat Type:</span>
                         <span className="font-medium">{property.heat_type}</span>
                       </div>
                     )}
-                  </div>
-                  <div className="space-y-3">
-                    {property.tax_annual_amount && (
+                    {property.heat_source && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Annual Taxes:</span>
-                        <span className="font-medium">{formatPrice(property.tax_annual_amount)}</span>
+                        <span className="text-gray-600">Heat Source:</span>
+                        <span className="font-medium">{property.heat_source}</span>
                       </div>
                     )}
-                    {property.lot_width && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Lot Width:</span>
-                        <span className="font-medium">{property.lot_width} ft</span>
-                      </div>
-                    )}
-                    {property.has_fireplace && (
+                    {property.has_fireplace !== undefined && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Fireplace:</span>
-                        <span className="font-medium">Yes</span>
+                        <span className="font-medium">{property.has_fireplace ? "Yes" : "No"}</span>
+                      </div>
+                    )}
+                    {property.zoning_designation && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Zoning:</span>
+                        <span className="font-medium">{property.zoning_designation}</span>
                       </div>
                     )}
                   </div>
                 </div>
+              </div>
+              
+              {/* Features Lists */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                {property.architectural_style && property.architectural_style.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Architectural Style</h3>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      {property.architectural_style.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {property.basement && property.basement.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Basement</h3>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      {property.basement.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {property.cooling && property.cooling.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Cooling</h3>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      {property.cooling.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {property.lot_features && property.lot_features.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Lot Features</h3>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      {property.lot_features.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1 mt-8 lg:mt-0">
-            <div className="space-y-6">
-              {/* Contact Card */}
-              <div className="bg-blue-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Contact Agent
-                </h3>
+          <div className="mt-12 lg:mt-0">
+            <div className="sticky top-4 space-y-6">
+              {/* Contact Agent */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
+              >
+                <h3 className="text-xl font-semibold mb-4">Contact Agent</h3>
+                
                 <div className="space-y-4">
-                  <button className="w-full bg-primary-700 text-white py-3 rounded-lg font-medium hover:bg-primary-800 transition-colors">
-                    Request Information
-                  </button>
-                  <button className="w-full border border-blue-600 text-primary-600 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                  <button className="w-full bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors flex items-center justify-center">
+                    <Calendar className="h-5 w-5 mr-2" />
                     Schedule Viewing
                   </button>
-                  <div className="flex items-center justify-center space-x-4 text-sm">
-                    <button className="flex items-center space-x-1 text-gray-600 hover:text-primary-600">
-                      <Calculator className="h-4 w-4" />
-                      <span>Mortgage Calculator</span>
-                    </button>
-                  </div>
+                  
+                  <button className="w-full bg-white text-primary-600 border border-primary-600 py-3 rounded-lg font-medium hover:bg-primary-50 transition-colors flex items-center justify-center">
+                    <Share2 className="h-5 w-5 mr-2" />
+                    Share Listing
+                  </button>
+                  
+                  <button className="w-full bg-white text-primary-600 border border-primary-600 py-3 rounded-lg font-medium hover:bg-primary-50 transition-colors flex items-center justify-center">
+                    <Calculator className="h-5 w-5 mr-2" />
+                    Mortgage Calculator
+                  </button>
                 </div>
-              </div>
-
-              {/* Office Info */}
+              </motion.div>
+              
+              {/* Listing Office */}
               {property.list_office_name && (
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Listed By
-                  </h3>
-                  <p className="text-gray-700">{property.list_office_name}</p>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
+                >
+                  <h3 className="text-lg font-semibold mb-3">Listed By</h3>
+                  <div className="text-gray-700">{property.list_office_name}</div>
+                </motion.div>
               )}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Similar Properties */}
-        {similarData?.similar_listings && similarData.similar_listings.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Similar Properties</h2>
+      {/* Similar Properties */}
+      {similarData?.similar_listings && similarData.similar_listings.length > 0 && (
+        <section className="py-12 bg-gray-50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-2xl font-bold text-gray-900 mb-8"
+            >
+              Similar Properties
+            </motion.h2>
+            
             <PropertyGrid properties={similarData.similar_listings} />
           </div>
-        )}
-      </div>
+        </section>
+      )}
     </div>
   );
 }

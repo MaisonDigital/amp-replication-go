@@ -1,6 +1,7 @@
+// src/components/properties/property-card.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, MapPin, Bed, Bath, Car, Square } from "lucide-react";
@@ -17,9 +18,62 @@ interface PropertyCardProps {
 export function PropertyCard({ property, className, showFavorite = true }: PropertyCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [mediumImageUrl, setMediumImageUrl] = useState<string | null>(null);
 
   const title = generatePropertyTitle(property);
   const href = `/properties/${property.listing_key}`;
+
+  // Fetch medium image for the property card
+  useEffect(() => {
+    let isMounted = true;
+    
+    async function fetchMediumImage() {
+      if (!property.listing_key) return;
+      
+      try {
+        // Use the existing API endpoint to get Medium size images
+        const response = await fetch(`/api/listings/${property.listing_key}/media?size=Medium`);
+        
+        if (response.ok && isMounted) {
+          const data = await response.json();
+          
+          // Find the preferred photo with Medium size
+          const preferredMediumPhoto = data.media.find(
+            (item: any) => 
+              item.preferred_photo_yn === true && 
+              item.image_size_description === "Medium" && 
+              item.media_url
+          );
+          
+          // If no preferred photo, take the first medium image
+          const firstMediumPhoto = data.media.find(
+            (item: any) => 
+              item.image_size_description === "Medium" && 
+              item.media_url
+          );
+          
+          // Use preferred photo if available, otherwise first medium photo
+          if (preferredMediumPhoto) {
+            setMediumImageUrl(preferredMediumPhoto.media_url);
+          } else if (firstMediumPhoto) {
+            setMediumImageUrl(firstMediumPhoto.media_url);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching medium image:", error);
+      }
+    }
+    
+    fetchMediumImage();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [property.listing_key]);
+
+  // Use medium image if available, otherwise fall back to thumbnail
+  const imageUrl = mediumImageUrl || property.thumbnail_url;
 
   return (
     <motion.div
@@ -30,12 +84,12 @@ export function PropertyCard({ property, className, showFavorite = true }: Prope
         className
       )}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden bg-gray-200">
         <Link href={href}>
-          {property.thumbnail_url ? (
+          {imageUrl ? (
             <>
               <Image
-                src={property.thumbnail_url}
+                src={imageUrl}
                 alt={title}
                 fill
                 className={cn(
@@ -43,14 +97,16 @@ export function PropertyCard({ property, className, showFavorite = true }: Prope
                   imageLoaded ? "opacity-100" : "opacity-0"
                 )}
                 onLoad={() => setImageLoaded(true)}
+                onError={() => setImageError(true)}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                quality={90}
               />
               {!imageLoaded && (
                 <div className="absolute inset-0 bg-gray-200 animate-pulse" />
               )}
             </>
           ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center">
               <Square className="h-12 w-12 text-gray-400" />
             </div>
           )}

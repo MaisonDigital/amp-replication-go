@@ -108,29 +108,24 @@ frontend/
 ### Installation
 
 ```bash
-# Clone or create the frontend directory
 cd frontend
 
-# Install dependencies (lightning fast with Bun!)
 bun install
 
-# Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your settings
 
-# Start development server
 bun dev
 ```
 
 ### Available Scripts
 
 ```bash
-bun dev          # Start development server (http://localhost:3000)
-bun build        # Build for production
-bun start        # Start production server
-bun lint         # Run ESLint
-bun type-check   # Run TypeScript checks
-bun format       # Format code with Prettier
+bun dev       
+bun build     
+bun start     
+bun lint      
+bun type-check
+bun format    
 ```
 
 ## ⚙️ Configuration
@@ -142,24 +137,23 @@ This is where you customize everything for each client:
 ```typescript
 export const siteConfig = {
   company: {
-    name: "Maison Property Group",        // ← Change this
+    name: "Maison Property Group",
     tagline: "Your Premier Real Estate Partner",
-    phone: "(613) 555-0123",             // ← Change this
-    email: "info@maisonpropertygroup.com", // ← Change this
-    // ... etc
+    phone: "(613) 555-0123",
+    email: "info@maisonpropertygroup.com",
   },
   
   theme: {
-    primary: "#1e40af",   // ← Brand colors
+    primary: "#1e40af",
     secondary: "#dc2626",
     accent: "#059669",
   },
   
-  primaryLocations: [      // ← Adds SEO pages for each
-    "Ottawa", "Kanata", "Orleans", // ← Add/remove locations
+  primaryLocations: [
+    "Ottawa", "Kanata", "Orleans",
   ],
   
-  officeKey: "OFFICE123", // ← Change to client's office key
+  officeKey: "OFFICE123",
 };
 ```
 
